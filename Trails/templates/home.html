@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runner's App</title>
+    <link rel="stylesheet" href="trails.css">
+</head>
+<script src="scripts.js"></script>
+
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <h1>Runner's App</h1>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#trails">Trails</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>Find Your Next Run</h2>
+                <p>Discover and share the best trails around you.</p>
+                <a href="#trails" class="btn">Find Trails</a>
+            </div>
+        </section>
+
+        <section id="trails" class="trails">
+            <div class="container">
+                <h2>Search Trails</h2>
+                <form id="searchForm">
+                    <input type="text" id="searchInput" placeholder="Search for trails...">
+                    <button type="submit" class="btn">Search</button>
+                </form>
+                <div id="trailResults"></div>
+            </div>
+        </section>
+        
+
+        <section id="profile" class="profile">
+            <div class="container">
+                <h2>My Profile</h2>
+                <form id="profileForm">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" placeholder="Tell us about yourself"></textarea>
+                    <button type="submit" class="btn">Update Profile</button>
+                </form>
+                <div id="profileMessage"></div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Runner's App. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

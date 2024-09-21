@@ -1,0 +1,39 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='trails.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form method="POST" action="{{ url_for('main.signup') }}">  <!-- Ensure correct form action -->
+            {{ form.hidden_tag() }}  <!-- CSRF token -->
+
+            <div>
+                <label for="username">{{ form.username.label }}</label>
+                {{ form.username(class="form-control") }}  <!-- Render username input -->
+            </div>
+
+            <div>
+                <label for="email">{{ form.email.label }}</label>
+                {{ form.email(class="form-control") }}  <!-- Render email input -->
+            </div>
+
+            <div>
+                <label for="password">{{ form.password.label }}</label>
+                {{ form.password(class="form-control") }}  <!-- Render password input -->
+            </div>
+
+            <div>
+                <label for="confirm_password">{{ form.confirm_password.label }}</label>
+                {{ form.confirm_password(class="form-control") }}  <!-- Render confirm password input -->
+            </div>
+
+            <button type="submit" class="btn">{{ form.submit.label }}</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
-from app.models import User
-from app.forms import RegistrationForm, LoginForm
+from app.models import User, Trail  # Import the Trail model
+from app.forms import RegistrationForm, LoginForm, TrailSubmissionForm  # Import the TrailForm
 from app import db, bcrypt
 
 # Create a blueprint for the routes
@@ -29,32 +29,22 @@ def signup():
 
     return render_template('signup.html', form=form)
 
-# Login Route with Debugging
+# Login Route
 @main_routes.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
 
     form = LoginForm()
-
-    # Debugging statements to trace the login flow
     if form.validate_on_submit():
-        print("Form validated successfully.")
         user = User.query.filter_by(email=form.email.data).first()
-        print(f"User found: {user}")
-        
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            print("Password matched.")
             login_user(user, remember=form.remember.data)
+            print(f"Logged in as :{current_user}")
             flash('Login successful!', 'success')
             return redirect(url_for('main.home'))
         else:
             flash('Login failed. Please check your email and password.', 'danger')
-            print("Login failed. Incorrect credentials.")
-    
-    # Print form errors if there are any
-    if form.errors:
-        print(f"Form errors: {form.errors}")
 
     return render_template('login.html', form=form)
 
@@ -72,19 +62,81 @@ def logout():
 def profile():
     return render_template('profile.html')  # Render profile page
 
-# Trails Route
+# Route to add a new trail
+@main_routes.route('/add-trail', methods=['GET', 'POST'])
+@login_required  # Only logged-in users can add trails
+def add_trail():
+    form = TrailSubmissionForm()
+    if form.validate_on_submit():
+        # Convert distance to kilometers if the unit is miles
+        distance = form.distance.data
+        if form.distance_unit.data == 'miles':
+            distance *= 1.60934  # Convert miles to kilometers
+
+        # Save trail to the database
+        new_trail = Trail(
+            name=form.name.data,
+            location=form.location.data,
+            distance=distance,  # Stored in kilometers
+            scenery=form.scenery.data,
+            amenities=form.amenities.data
+        )
+        db.session.add(new_trail)
+        db.session.commit()
+        flash('Trail submitted successfully!', 'success')
+        return redirect(url_for('main.trails'))
+    
+    return render_template('submit_trail.html', form=form)
+
+# Trails Route to display all trails
 @main_routes.route('/trails')
 def trails():
-    return render_template('trails.html')  # Render trails page
+    trails = Trail.query.all()  # Fetch all trails from the database
+    return render_template('trails.html', trails=trails)  # Render trails page with all trails
 
-# Route to search for trails (placeholder)
-@main_routes.route('/search', methods=['GET'])
+# Route to search for trails based on scenery and amenities
+@main_routes.route('/search-trails', methods=['GET'])
 def search_trails():
-    query = request.args.get('query', '').lower()
-    results = [
-        {'name': 'Sunny Trail', 'difficulty': 'Easy'},
-        {'name': 'Mountain Path', 'difficulty': 'Moderate'},
-        {'name': 'Forest Walk', 'difficulty': 'Hard'}
-    ]
-    matching_results = [trail for trail in results if query in trail['name'].lower()]
-    return jsonify(matching_results)
+    scenery_query = request.args.get('scenery', '').lower()
+    amenities_query = request.args.get('amenities', '').lower()
+
+    # Filter trails based on scenery and amenities
+    filtered_trails = Trail.query.filter(
+        Trail.scenery.contains(scenery_query),
+        Trail.amenities.contains(amenities_query)
+    ).all()
+
+    return jsonify([{
+        'name': trail.name,
+        'location': trail.location,
+        'distance': trail.distance,
+        'scenery': trail.scenery,
+        'amenities': trail.amenities
+    } for trail in filtered_trails])
+
+# Route to submit a new trail
+@main_routes.route('/submit-trail', methods=['GET', 'POST'])
+@login_required
+def submit_trail():
+    form = TrailSubmissionForm()
+    if form.validate_on_submit():
+        # Convert distance to kilometers if necessary
+        distance_km = form.distance.data
+        if form.distance_unit.data == 'miles':
+            distance_km = form.distance.data * 1.60934  # Convert miles to kilometers
+
+        # Create a new trail object
+        new_trail = Trail(
+            name=form.name.data,
+            location=form.location.data,
+            distance=distance_km,
+            scenery=form.scenery.data,
+            amenities=form.amenities.data,
+            creator=current_user
+        )
+        db.session.add(new_trail)
+        db.session.commit()
+        flash('Trail submitted successfully!', 'success')
+        return redirect(url_for('main.trails'))
+    
+    return render_template('submit_trail.html', form=form)

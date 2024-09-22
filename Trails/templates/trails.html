@@ -4,9 +4,91 @@
     <meta charset="UTF-8">
     <title>Trails</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='trails.css') }}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h1>Trails</h1>
-    <div id="trail-list"></div>
+    <header>
+        <nav>
+            <a href="{{ url_for('main.home') }}">Home</a>
+            <a href="{{ url_for('main.submit_trail') }}">Add Trail</a>
+            <a href="{{ url_for('main.logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Trails</h1>
+        
+        <div id="map" style="height: 400px;"></div> <!-- Map container -->
+
+<form id="searchForm">
+    <input type="text" id="searchInput" placeholder="Search for trails...">
+    <button type="submit">Search</button>
+</form>
+
+<div id="trailResults"></div> <!-- Search results container -->
+
+        <!-- Map container -->
+        <div id="map"></div>
+
+        <div id="trail-list">
+            {% if trails %}
+                <ul>
+                    {% for trail in trails %}
+                        <li>
+                            <h2>{{ trail.name }}</h2>
+                            <p><strong>Location:</strong> {{ trail.location }}</p>
+                            <p><strong>Distance:</strong> {{ trail.distance }} km</p>
+                            <p><strong>Scenery:</strong> {{ trail.scenery }}</p>
+                            <p><strong>Amenities:</strong> {{ trail.amenities }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No trails available. Be the first to add one!</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Runner's App</p>
+    </footer>
+
+    <!-- Leaflet JS (Make sure to load after Leaflet CSS) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        // Initialize the map and set its view to some initial coordinates and zoom level
+        var map = L.map('map').setView([51.505, -0.09], 13); // Example coordinates, replace with actual trail data
+
+        // Add OpenStreetMap tiles to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Example: Add a marker to the map
+        var marker = L.marker([51.505, -0.09]).addTo(map);
+        marker.bindPopup("<b>Hello world!</b><br>This is a trail location.").openPopup();
+
+        // Add a circle to show a different style marker (optional)
+        var circle = L.circle([51.508, -0.11], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 500
+        }).addTo(map);
+        circle.bindPopup("I am a circle.");
+    </script>
 </body>
 </html>

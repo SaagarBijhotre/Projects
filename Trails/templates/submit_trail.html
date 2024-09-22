@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit a Trail</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='trails.css') }}">
+</head>
+<body>
+    <h1>Submit a New Trail</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            <label for="name">{{ form.name.label }}</label>
+            {{ form.name(class="form-control") }}
+        </div>
+        <div>
+            <label for="location">{{ form.location.label }}</label>
+            {{ form.location(class="form-control") }}
+        </div>
+        <div>
+            <label for="distance">{{ form.distance.label }}</label>
+            {{ form.distance(class="form-control") }}
+        </div>
+        <div>
+            <label for="distance_unit">{{ form.distance_unit.label }}</label>
+            {{ form.distance_unit(class="form-control") }}
+        </div>
+        <div>
+            <label for="scenery">{{ form.scenery.label }}</label>
+            {{ form.scenery(class="form-control") }}
+        </div>
+        <div>
+            <label for="amenities">{{ form.amenities.label }}</label>
+            {{ form.amenities(class="form-control") }}
+        </div>
+        <div>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</body>
+</html>

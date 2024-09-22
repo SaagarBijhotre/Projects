@@ -1,29 +1,30 @@
-<!-- login.html -->
+<!-- templates/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='trails.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='trails.css') }}">  <!-- Link to your CSS -->
 </head>
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form method="POST" action="{{ url_for('main.login') }}">  <!-- Ensure correct form action -->
-            {{ form.hidden_tag() }}  <!-- CSRF token -->
+        <form method="POST" action="{{ url_for('main.login') }}">
+            {{ form.hidden_tag() }}  <!-- CSRF protection -->
 
-            <div>
+            <div class="form-group">
                 <label for="email">{{ form.email.label }}</label>
                 {{ form.email(class="form-control") }}  <!-- Render email input -->
             </div>
 
-            <div>
+            <div class="form-group">
                 <label for="password">{{ form.password.label }}</label>
                 {{ form.password(class="form-control") }}  <!-- Render password input -->
             </div>
 
-            <div>
-                {{ form.remember.label }} {{ form.remember() }}  <!-- Render remember me checkbox -->
+            <div class="form-group">
+                {{ form.remember.label }}  <!-- Render remember me checkbox label -->
+                {{ form.remember() }}  <!-- Render the checkbox -->
             </div>
 
             <button type="submit" class="btn">{{ form.submit.label }}</button>

@@ -20,7 +20,4 @@ class Trail(db.Model):
     amenities = db.Column(db.String(150), nullable=True)
     latitude = db.Column(db.Float, nullable=False)  # New field for latitude
     longitude = db.Column(db.Float, nullable=False) # New field for longitude
-
-    
-    # Foreign key linking to User
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Reference to User

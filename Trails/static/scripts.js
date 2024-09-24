@@ -29,11 +29,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Fit map to the markers
-        const bounds = trails.map(trail => [trail.latitude, trail.longitude]);
-        if (bounds.length > 0) {
-            map.fitBounds(bounds);
+        if (trails.length > 0) {
+            var group = new L.featureGroup(trails.map(trail => L.marker([trail.latitude, trail.longitude])));
+            map.fitBounds(group.getBounds().pad(0.5));
         }
     }
+    // Initial load: add all trails to the map
+    fetch('/api/trails')
+        .then(response => response.json())
+        .then(data => {
+            addMarkers(data.trails);
+        })
+        .catch(error => console.error('Error fetching trails:', error));
 
     // Search form event listener
     searchForm.addEventListener('submit', async function(e) {
@@ -50,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
             : '<p>No trails found.</p>';
 
         // Add markers for the search results
-        addMarkers(results);
+        addMarkers(results.trails);
     });
 });
 

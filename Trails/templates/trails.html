@@ -38,7 +38,7 @@
         <div id="map"></div>
 
         <!-- Search results will be displayed here -->
-        <div id="trail-list"></div>
+        <ul id="trail-list"></ul>
     </main>
 
     <footer>
@@ -50,14 +50,33 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
-        // Initialize the map and set its view to a default location and zoom level
-        var map = L.map('map').setView([51.505, -0.09], 13); // Example coordinates, replace with actual trail data
+        // Initialize the map and set a default view
+        var map = L.map('map').setView([32.7767, -96.7970], 10); // Centered on Dallas
 
         // Add OpenStreetMap tiles to the map
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+
+        // Function to clear all markers from the map
+        function clearMap() {
+            map.eachLayer(function(layer) {
+                if (!!layer.toGeoJSON) {
+                    map.removeLayer(layer); // Remove only markers, not the base tile layer
+                }
+            });
+        }
+
+        // Function to center the map based on returned trails
+        function centerMap(trails) {
+            if (trails.length > 0) {
+                var firstTrail = trails[0];
+                map.setView([firstTrail.latitude, firstTrail.longitude], 13);
+            } else {
+                map.setView([32.7767, -96.7970], 10); // Default to Dallas
+            }
+        }
 
         // Handle search form submission to filter and display trails
         document.getElementById('searchForm').addEventListener('submit', async function (e) {
@@ -67,16 +86,13 @@
             const trails = await response.json();
 
             // Clear previous markers and results
-            map.eachLayer(function (layer) {
-                if (!!layer.toGeoJSON) {
-                    map.removeLayer(layer); // Remove existing markers
-                }
-            });
-
-            // Clear the previous trail list
+            clearMap();
             document.getElementById('trail-list').innerHTML = '';
 
             if (trails.length > 0) {
+                // Center the map based on the first trail
+                centerMap(trails);
+
                 // Loop through the trails and add markers to the map
                 trails.forEach(trail => {
                     // Add marker for each trail
@@ -97,6 +113,7 @@
                 });
             } else {
                 document.getElementById('trail-list').innerHTML = '<p>No trails found.</p>';
+                map.setView([32.7767, -96.7970], 10); // Reset to default view
             }
         });
     </script>

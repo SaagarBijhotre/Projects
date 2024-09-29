@@ -18,8 +18,10 @@ def create_app():
                 static_folder='../static',  # Point to the static folder outside app
                 template_folder='../templates')  # Point to the templates folder outside app
 
-    app.config['SECRET_KEY'] = 'your_secret_key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    class Config:
+        SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost/db_name'
+        SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
     db.init_app(app)
     bcrypt.init_app(app)

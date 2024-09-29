@@ -1,15 +1,14 @@
 from app import create_app, db
-from app.models import User
+from app.models import User,Trail
 
 app = create_app()
 
-with app.app_context():
-    # Query all users
-    users = User.query.all()
+def initialize_database():
 
-    if users:
-        print("Users in the database:")
-        for user in users:
-            print(f"ID: {user.id}, Username: {user.username}, Email: {user.email}")
-    else:
-        print("No users found.")
+    with app.app_context():
+        db.create_all()
+        print("database initialized")
+
+if __name__ =='__main__':
+    initialize_database()
+
